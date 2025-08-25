@@ -104,46 +104,44 @@ const ParagraphRewrite = () => {
   };
 
   const handleRewrite = async (inputparagraph) => {
-    if (wordCount < 30) {
+    if (wordCount < 20) {
       toast.warning("Please enter at least 30 words to rewrite.", {
         position: "top-right",
         autoClose: 4000,
         theme: "colored",
       });
-      return; // stop execution
+      return;
     }
-    console.log("inputparagraph: ", inputparagraph);
-    console.log("activeTabName: ", activeTabName);
-    setLoading(true); // Start loading state
+
+    setLoading(true);
     try {
-      const data = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/rewrite/${activeTabName}`,
-        { message: inputparagraph }
+      const response = await axios.post(
+        "https://paragraph-rewriter-gorq-api.vercel.app/api/groq/chat",
+        {
+          text: inputparagraph,
+          style: activeTabName, // "Normal" | "Formal" | etc.
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      if (data) {
-        if (data.data.status === 200) {
-          setRewrittenData(data.data.data);
-        } else {
-          alert(
-            "Sorry this text cannot be rewritten right now. Please try again later!"
-          );
-          setRewrittenData("Error occurred.");
+      if (response.data?.reply) {
+        setRewrittenData(response.data.reply);
+        if (isMobile) {
+          setIsRewritten(true);
+          setShowRewrittenSection(true);
         }
-      }
-
-      if (isMobile) {
-        setIsRewritten(true);
-        setShowRewrittenSection(true);
+      } else {
+        toast.error("Unexpected response format from API.");
       }
     } catch (error) {
-      if (error.response) {
-        alert("Error rewriting text: " + error.response.data.message);
-      } else {
-        alert("An error occurred. Please try again later.");
-      }
+      console.error("Rewrite Error:", error.response?.data || error.message);
+      toast.error("Failed to rewrite paragraph. Please try again.");
     } finally {
-      setLoading(false); // Stop loading state
+      setLoading(false);
     }
   };
 
