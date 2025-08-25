@@ -1,45 +1,52 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import HighlightIcon from '@mui/icons-material/Highlight';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import HighlightIcon from "@mui/icons-material/Highlight";
+import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaPaste } from "react-icons/fa";
+import { FaRegFileLines } from "react-icons/fa6"; // fa6 = FontAwesome v6 set
+import { FaUpload } from "react-icons/fa"; // solid upload icon
+import { FaDownload } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
 
 const SentenceRewriteTool = () => {
   const Tabs = [
     {
       id: 1,
       title: "Simplify",
-      icon: <FormatColorFillIcon style={{ color: '#D4BDAC' }} />
+      icon: <FormatColorFillIcon style={{ color: "#D4BDAC" }} />,
     },
     {
       id: 2,
       title: "Shorten",
-      icon: <BorderColorIcon style={{ color: 'green' }} />
+      icon: <BorderColorIcon style={{ color: "green" }} />,
     },
     {
       id: 3,
       title: "Improver",
-      icon: <HighlightIcon style={{ color: '#78B7D0' }} />
+      icon: <HighlightIcon style={{ color: "#78B7D0" }} />,
     },
     {
       id: 4,
       title: "Randomizer",
-      icon: <TipsAndUpdatesIcon style={{ color: 'orange' }} />
+      icon: <TipsAndUpdatesIcon style={{ color: "orange" }} />,
     },
   ];
   const [activeTab, setActiveTab] = useState(0);
-  const [activeTabName, setActiveTabName] = useState(Tabs[0]?.title || "simplify");
+  const [activeTabName, setActiveTabName] = useState(
+    Tabs[0]?.title || "simplify"
+  );
   const [showDropdown, setShowDropdown] = useState(false);
   const [inputData, setInputData] = useState(""); // State for input textarea
   const [rewrittenData, setRewrittenData] = useState(""); // State for rewritten textarea
   const [isRewritten, setIsRewritten] = useState(false); // State to control input visibility on mobile
   const [isMobile, setIsMobile] = useState(false); // State to track if the screen is mobile
-  const [showRewrittenSection, setShowRewrittenSection] = useState(false); // State to show rewritten 
+  const [showRewrittenSection, setShowRewrittenSection] = useState(false); // State to show rewritten
   const [sentenceCount, setSentenceCount] = useState(0); // State for word count
   const [loadingSentence, setLoadingSentence] = useState(false);
 
@@ -52,19 +59,19 @@ const SentenceRewriteTool = () => {
 
   const handleTabClick = (idx, tabName) => {
     console.log("Tab is: ", idx);
-    setActiveTabName(tabName)
+    setActiveTabName(tabName);
     setActiveTab(idx);
     setShowDropdown(false); // Close the dropdown after selection
   };
   const handlePaste = async () => {
     try {
       const clipboardText = await navigator.clipboard.readText();
-      const combinedText = inputData + ' ' + clipboardText; // Add a space to separate the texts
+      const combinedText = inputData + " " + clipboardText; // Add a space to separate the texts
       const sentenceCount = countWords(combinedText); // Assuming countWords is defined elsewhere
 
       if (sentenceCount > 1500) {
         const wordsArray = combinedText.trim().split(/\s+/);
-        const limitedWords = wordsArray.slice(0, 1500).join(' '); // Get only the first 1500 words
+        const limitedWords = wordsArray.slice(0, 1500).join(" "); // Get only the first 1500 words
         setInputData(limitedWords);
       } else {
         setInputData(combinedText);
@@ -76,14 +83,15 @@ const SentenceRewriteTool = () => {
 
   // Define the countWords function if not already defined
   const countWords = (text) => {
-    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length;
   };
 
-
   const handleSentenceRewriter = async (inputparagraph) => {
-
-    console.log('inputText: ', inputparagraph);
-    console.log('tone: ', activeTabName);
+    console.log("inputText: ", inputparagraph);
+    console.log("tone: ", activeTabName);
     setLoadingSentence(true);
     // Start loading state
     const wordCount = countWords(inputparagraph);
@@ -92,19 +100,24 @@ const SentenceRewriteTool = () => {
         position: "top-right",
         autoClose: 4000,
         theme: "colored",
-      })
+      });
       return;
     }
     try {
-      const data = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/rewrite/sentencerewriter`, { inputText: inputparagraph, tone: activeTabName.toLowerCase() });
+      const data = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/rewrite/sentencerewriter`,
+        { inputText: inputparagraph, tone: activeTabName.toLowerCase() }
+      );
 
       if (data) {
         if (data.data.status === 200) {
-          console.log('data.data.data: ', data.data.data);
-          console.log('data.data.data.content: ', data.data.data.content);
+          console.log("data.data.data: ", data.data.data);
+          console.log("data.data.data.content: ", data.data.data.content);
           setRewrittenData(data.data.data.content);
         } else {
-          alert("Sorry this Sentence cannot be rewritten right now. Please try again later!");
+          alert(
+            "Sorry this Sentence cannot be rewritten right now. Please try again later!"
+          );
           setRewrittenData("Error occurred.");
         }
       }
@@ -137,8 +150,8 @@ const SentenceRewriteTool = () => {
     link.click();
   };
   const handleRewriteAgain = () => {
-    setInputData(''); // Clear input data
-    setRewrittenData(''); // Clear rewritten data
+    setInputData(""); // Clear input data
+    setRewrittenData(""); // Clear rewritten data
     setSentenceCount(0); // Reset word count
     setShowRewrittenSection(false); // Show input section again
   };
@@ -159,11 +172,15 @@ const SentenceRewriteTool = () => {
 
       try {
         console.log("formData: ", formData);
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/file/upload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/file/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         console.log("response.data.data: ", response);
         console.log("response.data.data: ", response.data);
@@ -187,7 +204,10 @@ const SentenceRewriteTool = () => {
         <div className="w-full sm:w-[600px] lg:w-[800px]">
           <h1 className="text-4xl sm:text-3xl font-bold">Sentence Rewriter</h1>
           <p className="text-md sm:text-lg mt-4">
-            Transform Your Sentences and Enhance Their Quality With the Help of Our Online Sentence Rewriter Tool. Enter Your Sentences Into the Space Provided Below and Start the Process for Free Without Any Signups.
+            Transform Your Sentences and Enhance Their Quality With the Help of
+            Our Online Sentence Rewriter Tool. Enter Your Sentences Into the
+            Space Provided Below and Start the Process for Free Without Any
+            Signups.
           </p>
         </div>
       </div>
@@ -196,25 +216,40 @@ const SentenceRewriteTool = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 bg-slate-100 text-black rounded-lg p-3">
           <div className="w-full">
             <div className="sm:hidden">
-              <label htmlFor="tabs" className="sr-only">Select rewriting style</label>
+              <label htmlFor="tabs" className="sr-only">
+                Select rewriting style
+              </label>
               {/* Custom Dropdown for small screens */}
               <div className="sm:hidden relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="bg-gray-50 border border-slate-300 text-gray-900 text-sm rounded-lg flex items-center justify-between w-[290px] p-2.5"
                 >
-                  <span>{Tabs[activeTab] ? Tabs[activeTab].title : 'Select a Tab'}</span>
-                  <i className={`fa-solid fa-chevron-down transition-transform duration-300 ${showDropdown ? 'rotate-180' : ''}`}></i>
+                  <span>
+                    {Tabs[activeTab] ? Tabs[activeTab].title : "Select a Tab"}
+                  </span>
+                  <i
+                    className={`fa-solid fa-chevron-down transition-transform duration-300 ${
+                      showDropdown ? "rotate-180" : ""
+                    }`}
+                  ></i>
                 </button>
                 {showDropdown && (
                   <ul className="absolute z-10 w-[290px] bg-white shadow-lg rounded-lg mt-2">
                     {Tabs.map((el, idx) => (
-                      <li key={idx} onClick={() => handleTabClick(idx, el.title)}>
+                      <li
+                        key={idx}
+                        onClick={() => handleTabClick(idx, el.title)}
+                      >
                         <button
-                          className={`inline-block text-md w-full p-2 text-gray-900 bg-slate-100 hover:bg-gray-500 hover:text-black border rounded-lg active focus:outline-none ${activeTab === idx ? "bg-gray-500 text-black" : "bg-gray-50"
-                            }`}
+                          className={`inline-block text-md w-full p-2 text-gray-900 bg-slate-100 hover:bg-gray-500 hover:text-black border rounded-lg active focus:outline-none ${
+                            activeTab === idx
+                              ? "bg-gray-500 text-black"
+                              : "bg-gray-50"
+                          }`}
                         >
-                          <span className="p-1 flex">{el.icon}
+                          <span className="p-1 flex">
+                            {el.icon}
                             <span className="ml-1">{el.title}</span>
                           </span>
                         </button>
@@ -223,22 +258,25 @@ const SentenceRewriteTool = () => {
                   </ul>
                 )}
               </div>
-
             </div>
-            <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex " >
-              {
-                Tabs.map((el, idx) => (
-                  <li className="w-full focus-within:z-10" key={idx}>
-                    <button
-                      className={`inline-block w-full p-1 border rounded-l-lg focus:outline-none ${activeTab === idx ? "bg-gray-500 text-white" : "bg-slate-100 hover:bg-gray-500 hover:text-white"}`}
-                      onClick={() => handleTabClick(idx, el.title)}
-                    >
-                      <span className="p-1 flex">{el.icon}
-                        <span className="m-1">{el.title}</span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
+            <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex ">
+              {Tabs.map((el, idx) => (
+                <li className="w-full focus-within:z-10" key={idx}>
+                  <button
+                    className={`inline-block w-full p-1 border rounded-l-lg focus:outline-none ${
+                      activeTab === idx
+                        ? "bg-gray-500 text-white"
+                        : "bg-slate-100 hover:bg-gray-500 hover:text-white"
+                    }`}
+                    onClick={() => handleTabClick(idx, el.title)}
+                  >
+                    <span className="p-1 flex">
+                      {el.icon}
+                      <span className="m-1">{el.title}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -248,7 +286,9 @@ const SentenceRewriteTool = () => {
             <div className="gap-1 hidden lg:block md:block">
               <div className="relative h-[400px] p-4 w-full bg-slate-100 rounded-lg">
                 <textarea
-                  className={`bg-slate-100 text-xl w-full ${inputData?.length === 0 ? 'h-[180px]' : 'h-full'} resize-none p-2 border-none outline-none`}
+                  className={`bg-slate-100 text-xl w-full ${
+                    inputData?.length === 0 ? "h-[180px]" : "h-full"
+                  } resize-none p-2 border-none outline-none`}
                   placeholder="Enter Text to Paraphrase..."
                   value={inputData || ""}
                   onChange={(e) => {
@@ -287,7 +327,7 @@ const SentenceRewriteTool = () => {
               </div>
               <div className="flex justify-between items-center mt-2 bg-slate-100 rounded-lg p-4">
                 <label className="border border-gray-600 p-1 rounded-lg hover:bg-gray-300  flex items-center cursor-pointer">
-                  <i className="fa-solid fa-upload p-1 text-cyan-800 "></i>
+                  <FaUpload className="p-1 text-cyan-800 text-2xl mx-auto" />
                   <span className="ml-2">Upload</span>
                   <input
                     id="multiple_files"
@@ -297,47 +337,50 @@ const SentenceRewriteTool = () => {
                     onChange={handleFileChange}
                   />
                 </label>
-                <span className="text-sm px-4">{countWords(inputData)} / words</span>
+                <span className="text-sm px-4">
+                  {countWords(inputData)} / words
+                </span>
                 <button
                   onClick={() => handleSentenceRewriter(inputData)}
                   disabled={inputData.length === 0 || loadingSentence}
                   className={`
     border border-gray-600 p-1 rounded-lg text-sm
-    ${inputData.length === 0 || loadingSentence
-                      ? "cursor-not-allowed opacity-50"
-                      : "hover:bg-gray-700 hover:text-white"
-                    }
+    ${
+      inputData.length === 0 || loadingSentence
+        ? "cursor-not-allowed opacity-50"
+        : "hover:bg-gray-700 hover:text-white"
+    }
   `}
                 >
-                  {loadingSentence
-                    ? (
-                      <span className="flex items-center">
-                        {/* Tailwind SVG spinner */}
-                        <svg
-                          className="w-4 h-4 mr-2 animate-spin"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12" cy="12" r="10"
-                            stroke="currentColor" strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8H4z"
-                          />
-                        </svg>
-                        Rewriting…
-                      </span>
-                    )
-                    : "Sentence Rewrite"
-                  }
+                  {loadingSentence ? (
+                    <span className="flex items-center">
+                      {/* Tailwind SVG spinner */}
+                      <svg
+                        className="w-4 h-4 mr-2 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Rewriting…
+                    </span>
+                  ) : (
+                    "Sentence Rewrite"
+                  )}
                 </button>
-
-
               </div>
             </div>
           )}
@@ -364,29 +407,34 @@ const SentenceRewriteTool = () => {
                 </div>
                 <div className="relative group inline-block">
                   <button
-                    className={`border border-gray-600 p-1 rounded-lg ${rewrittenData.length === 0
-                      ? "cursor-not-allowed opacity-50"
-                      : "hover:bg-gray-300 hover:text-white"
-                      }`}
+                    className={`border border-gray-600 p-1 rounded-lg ${
+                      rewrittenData.length === 0
+                        ? "cursor-not-allowed opacity-50"
+                        : "hover:bg-gray-300 hover:text-white"
+                    }`}
                     onClick={handleCopy}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-copy text-blue-800 text-2xl"></i>
+                    <FaCopy className="text-blue-800 text-2xl" />
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Copy
                   </div>
                 </div>
-                <div className="relative group block-inline">
+                <div className="relative group gap-3 block-inline">
                   <button
-                    className={`border border-gray-600 p-1 rounded-lg ${rewrittenData.length === 0
-                      ? "cursor-not-allowed opacity-50"
-                      : "hover:bg-gray-300 hover:text-black"
-                      }`}
+                    className={`border border-gray-600 p-1 rounded-lg ${
+                      rewrittenData.length === 0
+                        ? "cursor-not-allowed opacity-50"
+                        : "hover:bg-gray-300 hover:text-black"
+                    }`}
                     onClick={() => handleDownload("txt")}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-download text-2xl"></i> .txt
+                    <div className="justify-center flex items-center text-center">
+                      <FaDownload className="text-lg text-gray-800 mx-auto" />
+                      <p>.txt</p>
+                    </div>
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Download file .txt
@@ -394,14 +442,18 @@ const SentenceRewriteTool = () => {
                 </div>
                 <div className="relative group block-inline">
                   <button
-                    className={`border border-gray-600 p-1 rounded-lg ${rewrittenData.length === 0
-                      ? "cursor-not-allowed opacity-50"
-                      : "hover:bg-gray-300 hover:text-black"
-                      }`}
+                    className={`border border-gray-600 p-1 rounded-lg ${
+                      rewrittenData.length === 0
+                        ? "cursor-not-allowed opacity-50"
+                        : "hover:bg-gray-300 hover:text-black"
+                    }`}
                     onClick={() => handleDownload("doc")}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-download text-2xl"></i> .doc
+                    <div className="justify-center flex items-center text-center">
+                      <FaDownload className="text-lg text-gray-800 mx-auto" />
+                      <p>.doc</p>
+                    </div>
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Download file .doc
@@ -409,13 +461,14 @@ const SentenceRewriteTool = () => {
                 </div>
               </div>
             </div>
-
           )}
           {!showRewrittenSection && (
             <div className="gap-1 p-2">
               <div className="relative h-[400px] p-4 w-full bg-slate-100 rounded-lg md:hidden ">
                 <textarea
-                  className={`bg-slate-100 text-md w-full ${inputData.length === 0 ? 'h-[180px]' : 'h-full'} resize-none p-2 border-none outline-none`}
+                  className={`bg-slate-100 text-md w-full ${
+                    inputData.length === 0 ? "h-[180px]" : "h-full"
+                  } resize-none p-2 border-none outline-none`}
                   placeholder="Enter Text to Rephrase..."
                   value={inputData}
                   onChange={(e) => {
@@ -436,7 +489,7 @@ const SentenceRewriteTool = () => {
                         onClick={handlePaste}
                       >
                         <div className="justify-center items-center text-center">
-                          <i className="fa-solid fa-paste text-2xl text-pink-700"></i>
+                          <FaPaste className="text-2xl text-pink-700 mx-auto" />
                           <p>Paste Text</p>
                         </div>
                       </div>
@@ -445,7 +498,7 @@ const SentenceRewriteTool = () => {
                         onClick={sampleText}
                       >
                         <div className="justify-center items-center text-center">
-                          <i className="fa-regular fa-file-lines text-2xl text-cyan-600"></i>
+                          <FaRegFileLines className="text-2xl text-cyan-600 mx-auto" />
                           <p>Sample Text</p>
                         </div>
                       </div>
@@ -464,50 +517,53 @@ const SentenceRewriteTool = () => {
                     onChange={handleFileChange}
                   />
                 </label>
-                <span className="text-sm px-1 text-center">{countWords(inputData)} words</span>
+                <span className="text-sm px-1 text-center">
+                  {countWords(inputData)} words
+                </span>
                 <button
                   onClick={() => handleSentenceRewriter(inputData)}
                   disabled={inputData.length === 0 || loadingSentence}
                   className={`
     border border-gray-600 p-1 rounded-lg text-sm
-    ${inputData.length === 0 || loadingSentence
-                      ? "cursor-not-allowed opacity-50"
-                      : "hover:bg-gray-700 hover:text-white"
-                    }
+    ${
+      inputData.length === 0 || loadingSentence
+        ? "cursor-not-allowed opacity-50"
+        : "hover:bg-gray-700 hover:text-white"
+    }
   `}
                 >
-                  {loadingSentence
-                    ? (
-                      <span className="flex items-center">
-                        {/* Tailwind SVG spinner */}
-                        <svg
-                          className="w-4 h-4 mr-2 animate-spin"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12" cy="12" r="10"
-                            stroke="currentColor" strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8H4z"
-                          />
-                        </svg>
-                        Rewriting…
-                      </span>
-                    )
-                    : "Sentence Rewrite"
-                  }
+                  {loadingSentence ? (
+                    <span className="flex items-center">
+                      {/* Tailwind SVG spinner */}
+                      <svg
+                        className="w-4 h-4 mr-2 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Rewriting…
+                    </span>
+                  ) : (
+                    "Sentence Rewrite"
+                  )}
                 </button>
-
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

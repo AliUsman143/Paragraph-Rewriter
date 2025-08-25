@@ -10,6 +10,12 @@ import FlareIcon from "@mui/icons-material/Flare";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaPaste } from "react-icons/fa";
+import { FaRegFileLines } from "react-icons/fa6"; // fa6 = FontAwesome v6 set
+import { FaUpload } from "react-icons/fa"; // solid upload icon
+import { FaDownload } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
+
 const ParagraphRewrite = () => {
   const Tabs = [
     {
@@ -312,7 +318,7 @@ const ParagraphRewrite = () => {
                         onClick={handlePaste}
                       >
                         <div className="justify-center items-center text-center">
-                          <i className="fa-solid fa-paste text-2xl text-pink-700"></i>
+                          <FaPaste className="text-2xl text-pink-700 mx-auto" />
                           <p>Paste Text</p>
                         </div>
                       </div>
@@ -321,7 +327,7 @@ const ParagraphRewrite = () => {
                         onClick={sampleText}
                       >
                         <div className="justify-center items-center text-center">
-                          <i className="fa-regular fa-file-lines text-2xl text-cyan-600"></i>
+                          <FaRegFileLines className="text-2xl text-cyan-600 mx-auto" />
                           <p>Sample Text</p>
                         </div>
                       </div>
@@ -331,7 +337,7 @@ const ParagraphRewrite = () => {
               </div>
               <div className="flex justify-between items-center mt-2 bg-slate-100 rounded-lg p-4">
                 <label className="border border-gray-600 p-1 rounded-lg hover:bg-gray-300  flex items-center cursor-pointer">
-                  <i className="fa-solid fa-upload p-1 text-cyan-800 "></i>
+                  <FaUpload className="p-1 text-cyan-800 text-2xl mx-auto" />
                   <span className="ml-2">Upload</span>
                   <input
                     id="multiple_files"
@@ -419,7 +425,7 @@ const ParagraphRewrite = () => {
                     onClick={handleCopy}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-copy text-blue-800 text-2xl"></i>
+                    <FaCopy className="text-blue-800 text-2xl" />
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-gray-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Copy
@@ -435,7 +441,10 @@ const ParagraphRewrite = () => {
                     onClick={() => handleDownload("txt")}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-download text-2xl"></i> .txt
+                    <div className="justify-center flex items-center text-center">
+                      <FaDownload className="text-lg text-gray-800 mx-auto" />
+                      <p>.txt</p>
+                    </div>
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-gray-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Download file .txt
@@ -451,7 +460,10 @@ const ParagraphRewrite = () => {
                     onClick={() => handleDownload("doc")}
                     disabled={rewrittenData.length === 0}
                   >
-                    <i className="fa-solid fa-download text-2xl"></i> .doc
+                    <div className="justify-center flex items-center text-center">
+                      <FaDownload className="text-lg text-gray-800 mx-auto" />
+                      <p>.doc</p>
+                    </div>
                   </button>
                   <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-sm text-white bg-gray-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Download file .doc
