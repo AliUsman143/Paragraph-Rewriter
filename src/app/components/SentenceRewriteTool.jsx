@@ -91,35 +91,35 @@ const SentenceRewriteTool = () => {
 
   const handleSentenceRewriter = async (inputparagraph) => {
     console.log("inputText: ", inputparagraph);
-    console.log("tone: ", activeTabName);
+    console.log("mode: ", activeTabName); // Tab ka title API ke mode hoga
     setLoadingSentence(true);
-    // Start loading state
+
     const wordCount = countWords(inputparagraph);
-    if (wordCount < 10) {
-      toast.warning("Please enter at least 10 words to rewrite sentence.", {
+    if (wordCount < 5) {
+      toast.warning("Please enter at least 5 words to rewrite sentence.", {
         position: "top-right",
         autoClose: 4000,
         theme: "colored",
       });
       return;
     }
-    try {
-      const data = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/rewrite/sentencerewriter`,
-        { inputText: inputparagraph, tone: activeTabName.toLowerCase() }
-      );
 
-      if (data) {
-        if (data.data.status === 200) {
-          console.log("data.data.data: ", data.data.data);
-          console.log("data.data.data.content: ", data.data.data.content);
-          setRewrittenData(data.data.data.content);
-        } else {
-          alert(
-            "Sorry this Sentence cannot be rewritten right now. Please try again later!"
-          );
-          setRewrittenData("Error occurred.");
+    try {
+      const response = await axios.post(
+        "https://paragraph-rewriter-gorq-api.vercel.app/api/sentence/rewrite",
+        {
+          text: inputparagraph,
+          mode: activeTabName, // Simplify, Shorten, Improver, Randomizer
         }
+      );
+      console.log("API response: ", response);
+      if (response.data && response.data.rewritten) {
+        setRewrittenData(response.data.rewritten);
+      } else {
+        toast.error("No rewritten text received from API.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
       }
 
       if (isMobile) {
@@ -127,13 +127,13 @@ const SentenceRewriteTool = () => {
         setShowRewrittenSection(true);
       }
     } catch (error) {
-      if (error.response) {
-        alert("Error rewriting text: " + error.response.data.message);
-      } else {
-        alert("An error occurred. Please try again later.");
-      }
+      console.error("Error rewriting text:", error);
+      toast.error("An error occurred while rewriting.", {
+        position: "top-right",
+        autoClose: 4000,
+      });
     } finally {
-      setLoadingSentence(false); // Stop loading  state
+      setLoadingSentence(false);
     }
   };
 
