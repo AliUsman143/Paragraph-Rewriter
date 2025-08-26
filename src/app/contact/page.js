@@ -1,9 +1,6 @@
 'use client';
 import { useState } from "react";
-import axios from "axios";
-// import Navbar from "../components/navbar";
-// import Footer from "../components/footer";
-import Swal from "sweetalert2";  // Import SweetAlert2
+import Swal from "sweetalert2";
 
 const Contact = () => {
     const [data, setData] = useState({
@@ -11,7 +8,7 @@ const Contact = () => {
         email: '',
         message: '',
     });
-    const [isSubmitting, setIsSubmitting] = useState(false); // Track submission state
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const inputEvent = (event) => {
         const { name, value } = event.target;
@@ -30,70 +27,62 @@ const Contact = () => {
 
     const Submit = async (event) => {
         event.preventDefault();
-        setIsSubmitting(true);  // Disable the button and show loading
+        setIsSubmitting(true);
 
-        // Check if form is valid
         if (!validateForm()) {
             Swal.fire({
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'All fields are required!',
             });
-            setIsSubmitting(false);  // Re-enable button
+            setIsSubmitting(false);
             return;
         }
 
         try {
-            // Sending the data to the API
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/user/contactus`, data);
+            // Web3Forms ke liye data banana
+            const formData = new FormData();
+            formData.append("access_key", "6188881b-88e7-4909-958d-04480a416db4"); // apna key
+            formData.append("subject", "New Contact Form Submission"); 
+            formData.append("from_name", data.name);
+            formData.append("from_email", data.email);
+            formData.append("message", data.message);
 
-            if (response.status === 200) {
-                // Success case
+            // yaha tum apna direct receiver email laga do
+            formData.append("to_email", "aliusmanijaz143@gmail.com");
+
+            const res = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            }).then((res) => res.json());
+
+            if (res.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success!',
-                    text: 'Your message has been successfully sent!',
+                    title: 'Message Sent!',
+                    text: 'Your message has been successfully sent.',
+                });
+                setData({ name: '', email: '', message: '' });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong. Please try again.',
                 });
             }
         } catch (error) {
-            // Error handling
-            if (error.response) {
-                // If response exists but status code is not 2xx
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response.data.message || 'Something went wrong. Please try again later.',
-                });
-            } else if (error.request) {
-                // If no response was received
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No response from the server. Please check your connection.',
-                });
-            } else {
-                // If the request setup fails
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Something went wrong with the request.',
-                });
-            }
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to send message. Please check your connection.',
+            });
         } finally {
-            setIsSubmitting(false); // Re-enable button after submission
+            setIsSubmitting(false);
         }
-
-        // Clear form data after submission
-        setData({
-            name: '',
-            email: '',
-            message: '',
-        });
     };
 
     return (
         <>
-            {/* <Navbar /> */}
             <div className="font-[sans-serif] max-w-6xl mx-auto relative bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-3xl overflow-hidden mt-36 mb-24">
                 <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-gray-700"></div>
                 <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-gray-700"></div>
@@ -103,11 +92,12 @@ const Contact = () => {
                         <div className="mt-10">
                             <h1 className="text-4xl font-bold">Get in Touch</h1>
                             <p className="text-md mt-5 text-justify">
-                                Have questions or feedback? We are here to help! Our dedicated support team is just a click away, ready to assist you on your learning journey. Whether you need technical assistance, guidance on course selection, or simply want to share your thoughts, we value your input and are committed to providing a seamless experience. Reach out to us today and lets embark on this educational adventure together!
+                                Have questions or feedback? We are here to help! Reach out to us today and lets embark on this educational adventure together!
                             </p>
                             
                             <p className="mt-5">
-                                <i className="fa-solid fa-envelope"></i><span className="ml-5">hi.paragraphrewriter.io@gmail.com</span>
+                                <i className="fa-solid fa-envelope"></i>
+                                <span className="ml-5">aliusmanijaz143@gmail.com</span>
                             </p>
                         </div>
                     </div>
@@ -133,6 +123,7 @@ const Contact = () => {
                                 value={data.email}
                                 onChange={inputEvent}
                                 autoComplete="off"
+                                required
                             />
                             <textarea
                                 placeholder="Message"
@@ -142,28 +133,19 @@ const Contact = () => {
                                 value={data.message}
                                 onChange={inputEvent}
                                 autoComplete="off"
+                                required
                             />
                             <button
                                 type="submit"
                                 className="text-white w-full font-bold relative bg-gray-700 hover:bg-gray-600 rounded-md text-sm px-6 py-3 !mt-6"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? (
-                                    <span>Submitting...</span>
-                                ) : (
-                                    <>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="#fff" className="mr-2 inline" viewBox="0 0 548.244 548.244">
-                                            <path fillRule="evenodd" d="M392.19 156.054 211.268 281.667 22.032 218.58C8.823 214.168-.076 201.775 0 187.852c.077-13.923 9.078-26.24 22.338-30.498L506.15 1.549c11.5-3.697 24.123-.663 32.666 7.88 8.542 8.543 11.577 21.165 7.879 32.666L390.89 525.906c-4.258 13.26-16.575 22.261-30.498 22.338-13.923.076-26.316-8.823-30.728-22.032l-63.393-190.153z" clipRule="evenodd" data-original="#000000" />
-                                        </svg>
-                                        Send Message
-                                    </>
-                                )}
+                                {isSubmitting ? "Submitting..." : "Send Message"}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-            {/* <Footer /> */}
         </>
     );
 };
